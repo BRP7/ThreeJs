@@ -16,13 +16,13 @@ scene.add(cube);
 // Set camera position
 camera.position.z = 5;
 
-// Add OrbitControls
+// Initialize OrbitControls
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
-    
+
     // Rotate the cube for some animation
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
