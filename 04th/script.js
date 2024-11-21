@@ -14,6 +14,13 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
     height: 0.5,
   });
 
+
+  const ambientLight = new THREE.AmbientLight(0x404040, 1);  // Soft light
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+pointLight.position.set(10, 10, 10);
+scene.add(pointLight);
   // Material for text
   const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
