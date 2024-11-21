@@ -17,8 +17,7 @@ scene.add(cube);
 camera.position.z = 5;
 
 // Initialize OrbitControls
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
+// const controls = new THREE.OrbitControls(camera, renderer.domElement);
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -28,7 +27,7 @@ function animate() {
     cube.rotation.y += 0.01;
 
     // Update OrbitControls to allow interaction
-    controls.update();
+    // controls.update();
 
     // Render the scene
     renderer.render(scene, camera);
