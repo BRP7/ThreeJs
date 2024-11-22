@@ -39,7 +39,6 @@
 
         animate();
 
-        // 7. Handle window resizing (responsive design)
         window.addEventListener('resize', () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
