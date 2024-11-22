@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cube with Three.js</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Include the Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // 1. Scene setup
+        const scene = new THREE.Scene();
+        
+        // 2. Camera setup
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        // 3. WebGLRenderer setup
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight); // Set canvas size
+        document.body.appendChild(renderer.domElement); // Add canvas to the DOM
+
+        // 4. Create a Cube geometry
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube); // Add cube to the scene
+
+        // 5. Position the camera
+        camera.position.z = 5;
+
+        // 6. Animation loop (Render loop)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate the cube for animation effect
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            // Render the scene from the camera's perspective
+            renderer.render(scene, camera);
+        }
+
+        // Start the animation
+        animate();
+
+        // 7. Handle window resizing (responsive design)
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
