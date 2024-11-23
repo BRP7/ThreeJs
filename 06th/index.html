@@ -3,48 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NxtSite - Uniqueness in Design</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>3D Ocean Experience</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="logo">NxtSite</div>
-      <p class="tagline">To Craft Uniquital Identities</p>
-    </header>
-
-    <!-- Main Section -->
-    <main class="main">
-      <div class="central-content">
-        <h1>SINGLE<br><span>STUNNING</span></h1>
-        <p>Crafting digital experiences that redefine luxury.</p>
-        <div class="media">
-          <img src="imag.webp" alt="Website showcase">
-        </div>
-      </div>
-
-      <!-- Decorative Elements -->
-      <div class="decorative-elements">
-        <!-- Add decorative SVGs or custom elements here -->
-      </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="info-block">
-        <h2>Single</h2>
-        <p>Description for Single.</p>
-      </div>
-      <div class="info-block">
-        <h2>Stunning</h2>
-        <p>Description for Stunning.</p>
-      </div>
-      <div class="info-block">
-        <h2>Frevent</h2>
-        <p>Description for Frevent.</p>
-      </div>
-    </footer>
-  </div>
+  <!-- Load Three.js First -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Then Load Water.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/objects/Water.js"></script>
+  
+  <!-- Then Load OrbitControls.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+  
+  <!-- Finally, Load Your Custom Script -->
+  <script src="script.js"></script>
 </body>
 </html>
