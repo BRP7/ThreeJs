@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Distortion</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    uniform sampler2D uTexture;
+    uniform vec2 uMouse;
+    uniform float uTime;
+    varying vec2 vUv;
+
+    void main() {
+      // Distance from mouse to fragment
+      float dist = distance(vUv, uMouse);
+
+      // Create a distortion effect
+      vec2 distortedUv = vUv + 0.1 * vec2(
+        sin(uTime + dist * 10.0),
+        cos(uTime + dist * 10.0)
+      );
+
+      // Sample the texture
+      vec4 color = texture2D(uTexture, distortedUv);
+      gl_FragColor = color;
+    }
+  </script>
+  <script>
+    // Initialize Three.js
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Load your image as a texture
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('./pic.jpg', () => {
+      animate();
+    });
+
+    // Shader material
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTexture: { value: texture },
+        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+        uTime: { value: 0 }
+      },
+      vertexShader: document.getElementById('vertexShader').textContent,
+      fragmentShader: document.getElementById('fragmentShader').textContent
+    });
+
+    // Plane geometry
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const plane = new THREE.Mesh(geometry, material);
+    scene.add(plane);
+
+    camera.position.z = 1;
+
+    // Track mouse movement
+    const mouse = new THREE.Vector2();
+    document.addEventListener('mousemove', (event) => {
+      mouse.x = event.clientX / window.innerWidth;
+      mouse.y = 1.0 - event.clientY / window.innerHeight; // Flip Y axis
+      material.uniforms.uMouse.value = mouse;
+    });
+
+    // Render loop
+    function animate() {
+      material.uniforms.uTime.value += 0.01; // Update time uniform
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+
+    // Handle resizing
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
