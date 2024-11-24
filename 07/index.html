@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Distortion</title>
+  <title>Image Distortion on Mouse Move</title>
   <style>
     body {
       margin: 0;
@@ -27,21 +27,28 @@
   <script id="fragmentShader" type="x-shader/x-fragment">
     uniform sampler2D uTexture;
     uniform vec2 uMouse;
-    uniform float uTime;
+    uniform vec2 uResolution;
     varying vec2 vUv;
 
     void main() {
-      // Distance from mouse to fragment
-      float dist = distance(vUv, uMouse);
+      // Calculate normalized mouse position
+      vec2 mouseNormalized = uMouse / uResolution;
 
-      // Create a distortion effect
-      vec2 distortedUv = vUv + 0.1 * vec2(
-        sin(uTime + dist * 10.0),
-        cos(uTime + dist * 10.0)
+      // Distance between the current fragment and the mouse
+      float dist = distance(vUv, mouseNormalized);
+
+      // Apply distortion effect only near the mouse
+      float effect = smoothstep(0.2, 0.0, dist);
+
+      // Distort the UVs based on proximity to the mouse
+      vec2 distortedUv = vUv + effect * 0.05 * vec2(
+        vUv.x - mouseNormalized.x,
+        vUv.y - mouseNormalized.y
       );
 
       // Sample the texture
       vec4 color = texture2D(uTexture, distortedUv);
+
       gl_FragColor = color;
     }
   </script>
@@ -53,50 +60,68 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Load your image as a texture
+    // Load the texture
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('./pic.jpg', () => {
+    loader.load('./pic.jpg', (texture) => {
+      texture.minFilter = THREE.LinearFilter;
+
+      // Adjust plane size to cover the full screen
+      const aspect = texture.image.width / texture.image.height;
+      const screenAspect = window.innerWidth / window.innerHeight;
+      const scale = screenAspect > aspect ? 
+        { width: screenAspect / aspect, height: 1 } : 
+        { width: 1, height: aspect / screenAspect };
+
+      const geometry = new THREE.PlaneGeometry(2 * scale.width, 2 * scale.height);
+
+      // Create the shader material
+      const material = new THREE.ShaderMaterial({
+        uniforms: {
+          uTexture: { value: texture },
+          uMouse: { value: new THREE.Vector2(-9999, -9999) }, // Initially out of bounds
+          uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+        },
+        vertexShader: document.getElementById('vertexShader').textContent,
+        fragmentShader: document.getElementById('fragmentShader').textContent
+      });
+
+      const plane = new THREE.Mesh(geometry, material);
+      scene.add(plane);
+      camera.position.z = 1;
+
+      // Start animation loop
       animate();
     });
-
-    // Shader material
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        uTexture: { value: texture },
-        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-        uTime: { value: 0 }
-      },
-      vertexShader: document.getElementById('vertexShader').textContent,
-      fragmentShader: document.getElementById('fragmentShader').textContent
-    });
-
-    // Plane geometry
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const plane = new THREE.Mesh(geometry, material);
-    scene.add(plane);
-
-    camera.position.z = 1;
 
     // Track mouse movement
     const mouse = new THREE.Vector2();
     document.addEventListener('mousemove', (event) => {
-      mouse.x = event.clientX / window.innerWidth;
-      mouse.y = 1.0 - event.clientY / window.innerHeight; // Flip Y axis
-      material.uniforms.uMouse.value = mouse;
+      mouse.x = event.clientX;
+      mouse.y = window.innerHeight - event.clientY; // Invert Y-axis for shaders
     });
 
-    // Render loop
+    // Animation loop
     function animate() {
-      material.uniforms.uTime.value += 0.01; // Update time uniform
+      // Update the mouse uniform
+      const material = scene.children[0]?.material;
+      if (material) {
+        material.uniforms.uMouse.value = mouse;
+      }
+
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
 
-    // Handle resizing
+    // Handle window resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const material = scene.children[0]?.material;
+      if (material) {
+        material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+      }
     });
   </script>
 </body>
