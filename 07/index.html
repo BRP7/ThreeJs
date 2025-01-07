@@ -74,6 +74,7 @@
 
       const geometry = new THREE.PlaneGeometry(2 * scale.width, 2 * scale.height);
 
+      // Create the shader material
       const material = new THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
