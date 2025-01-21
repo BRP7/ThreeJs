@@ -65,7 +65,7 @@
     loader.load('./pic.jpg', (texture) => {
       texture.minFilter = THREE.LinearFilter;
 
-    // Adjust plane size to cover the full screen
+      // Adjust plane size to cover the full screen
       const aspect = texture.image.width / texture.image.height;
       const screenAspect = window.innerWidth / window.innerHeight;
       const scale = screenAspect > aspect ? 
